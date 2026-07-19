@@ -73,7 +73,6 @@ The prototype was tested for real-time clock display, case-number control, speak
 ![Smart Courtroom Timer Prototype](Images/final%20prototype.jpeg)
 
 
-
 ## LCD Output
 
 The 16×2 LCD provides real-time information about the system. During idle operation, it displays the current date and time obtained from the DS3231 RTC module.
@@ -81,8 +80,6 @@ The 16×2 LCD provides real-time information about the system. During idle opera
 During an active courtroom session, the LCD displays information such as the case number, speaker number, countdown timer, timer status, and waiting message for the next speaker.
 
 ![LCD Output](Images/lcd%20output.jpeg)
-
----
 
 ## Applications
 
