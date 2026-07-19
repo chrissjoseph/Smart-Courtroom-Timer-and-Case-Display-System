@@ -48,6 +48,42 @@ An ESP32-based Smart Courtroom Timer and Case Display System that automates spea
 
 ![Watch Demo Video](Videos/demovideo.mp4)
 
+## Simulation
+
+The Smart Courtroom Timer and Case Display System was also designed and tested using the Wokwi simulator. The simulation helped verify the circuit connections, ESP32 program, LCD output, push-button input, speaker-detection logic, and countdown-timer operation before implementing the physical prototype.
+
+![Wokwi Simulation](Simulation/wokwi_diagram.png)
+
+### Simulation Files
+
+- `diagram.json` contains the component arrangement and wiring connections.
+- `sketch.ino` contains the ESP32 program used in the Wokwi simulation.
+- `wokwi diagram.png` contains a screenshot of the simulated circuit.
+- `wokwi link.txt` contains the link to the online Wokwi project.
+
+### View Simulation
+
+[Open the Wokwi Simulation](PASTE_YOUR_WOKWI_LINK_HERE)
+## Prototype
+
+The completed hardware prototype of the Smart Courtroom Timer and Case Display System was developed using the ESP32 DevKit V1. It integrates the DS3231 RTC module, 16×2 I2C LCD, IR sensor, KY-038 sound sensor, and push button.
+
+The prototype was tested for real-time clock display, case-number control, speaker detection, countdown timing, and sound-controlled pause and resume operation.
+
+![Smart Courtroom Timer Prototype](Images/final%20prototype.jpeg)
+
+
+
+## LCD Output
+
+The 16×2 LCD provides real-time information about the system. During idle operation, it displays the current date and time obtained from the DS3231 RTC module.
+
+During an active courtroom session, the LCD displays information such as the case number, speaker number, countdown timer, timer status, and waiting message for the next speaker.
+
+![LCD Output](Images/lcd%20output.jpeg)
+
+---
+
 ## Applications
 
 - Courtroom proceedings
