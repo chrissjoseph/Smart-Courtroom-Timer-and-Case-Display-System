@@ -63,7 +63,7 @@ The Smart Courtroom Timer and Case Display System was also designed and tested u
 
 ### View Simulation
 
-[Open the Wokwi Simulation](PASTE_YOUR_WOKWI_LINK_HERE)
+[Open the Wokwi Simulation](https://wokwi.com/projects/456312737790568449)
 ## Prototype
 
 The completed hardware prototype of the Smart Courtroom Timer and Case Display System was developed using the ESP32 DevKit V1. It integrates the DS3231 RTC module, 16×2 I2C LCD, IR sensor, KY-038 sound sensor, and push button.
