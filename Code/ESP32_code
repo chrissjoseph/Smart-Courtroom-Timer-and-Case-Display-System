@@ -1,1 +1,230 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include "RTClib.h"
 
+LiquidCrystal_I2C lcd(0x27,16,2);
+RTC_DS3231 rtc;
+
+#define IR_PIN 15
+#define SOUND_PIN 34
+#define SOUND_THRESHOLD 1000
+#define BUTTON_PIN 25
+
+int caseNo = 1;
+int speakerNo = 0;
+
+bool caseStarted = false;
+bool personInside = false;
+bool timerPaused = false;
+
+unsigned long speakerStartMillis;
+int countdown = 120;
+
+bool lastButtonState = HIGH;
+bool soundTriggered = false;
+
+// Debounce
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+
+void setup() {
+
+  pinMode(IR_PIN, INPUT);
+  pinMode(SOUND_PIN, INPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+  Serial.begin(115200);
+
+  Wire.begin(21,22);
+
+  lcd.init();
+  lcd.backlight();
+
+  // RTC check
+  if (!rtc.begin()) {
+    Serial.println("RTC not found");
+    while (1);
+  }
+
+  // USE ONLY ONCE to set time, then comment again
+  // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+
+  lcd.clear();
+}
+
+void showDateTime(){
+
+  DateTime now = rtc.now();
+
+  lcd.setCursor(0,0);
+  lcd.print("DATE:");
+  lcd.print(now.day());
+  lcd.print("/");
+  lcd.print(now.month());
+  lcd.print("/");
+  lcd.print(now.year());
+
+  lcd.setCursor(0,1);
+  lcd.print("TIME:");
+
+  if(now.hour()<10) lcd.print("0");
+  lcd.print(now.hour());
+  lcd.print(":");
+
+  if(now.minute()<10) lcd.print("0");
+  lcd.print(now.minute());
+  lcd.print(":");
+
+  if(now.second()<10) lcd.print("0");
+  lcd.print(now.second());
+}
+
+void showCaseSpeaker(){
+
+  lcd.clear();
+
+  lcd.setCursor(0,0);
+  lcd.print("CASE:");
+  lcd.print(caseNo);
+
+  lcd.setCursor(10,0);
+  lcd.print("SP:");
+  lcd.print(speakerNo);
+}
+
+void loop() {
+
+  // -------- BUTTON (DEBOUNCED) --------
+  bool reading = digitalRead(BUTTON_PIN);
+
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+
+    if (lastButtonState == HIGH && reading == LOW) {
+
+      lcd.clear();
+
+      if (!caseStarted) {
+        caseStarted = true;
+      } else {
+        caseNo++;
+      }
+
+      speakerNo = 0;
+      personInside = false;
+
+      lcd.setCursor(0,0);
+      lcd.print("CASE:");
+      lcd.print(caseNo);
+
+      delay(1500);
+      lcd.clear();
+    }
+  }
+
+  lastButtonState = reading;
+
+  // -------- IR DETECTION --------
+  if (digitalRead(IR_PIN) == LOW) {
+
+    delay(300);
+
+    if (!personInside) {
+
+      // PERSON ENTER
+      speakerNo++;
+      personInside = true;
+      timerPaused = false;
+
+      speakerStartMillis = millis();
+      countdown = 120;
+
+      showCaseSpeaker();
+    }
+
+    else {
+
+      // PERSON EXIT
+      personInside = false;
+
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("WAITING FOR NEXT");
+      lcd.setCursor(0,1);
+      lcd.print("SPEAKER");
+
+      delay(2000);
+      lcd.clear();
+    }
+  }
+
+  // -------- SOUND SENSOR --------
+  int soundValue = analogRead(SOUND_PIN);
+
+  if (soundValue > SOUND_THRESHOLD && !soundTriggered) {
+
+    soundTriggered = true;
+
+    if (personInside) {
+
+      timerPaused = !timerPaused;
+
+      lcd.clear();
+
+      if (timerPaused) {
+
+        lcd.setCursor(0,0);
+        lcd.print("TIME PAUSED");
+
+      } else {
+
+        lcd.setCursor(0,0);
+        lcd.print("TIME RESUMED");
+
+        speakerStartMillis = millis() - (120 - countdown) * 1000;
+      }
+
+      delay(1500);
+      showCaseSpeaker();
+    }
+  }
+
+  if (soundValue < SOUND_THRESHOLD) {
+    soundTriggered = false;
+  }
+
+  // -------- TIMER DISPLAY --------
+  if (personInside) {
+
+    if (!timerPaused) {
+      countdown = 120 - ((millis() - speakerStartMillis) / 1000);
+    }
+
+    // Prevent negative time
+    if (countdown < 0) countdown = 0;
+
+    int min = countdown / 60;
+    int sec = countdown % 60;
+
+    lcd.setCursor(0,1);
+    lcd.print("TIME ");
+
+    if (min < 10) lcd.print("0");
+    lcd.print(min);
+    lcd.print(":");
+
+    if (sec < 10) lcd.print("0");
+    lcd.print(sec);
+
+    lcd.print("   ");
+  }
+
+  else {
+    showDateTime();
+  }
+
+  delay(100);
+}
