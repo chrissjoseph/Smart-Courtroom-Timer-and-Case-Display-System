@@ -46,6 +46,7 @@ An ESP32-based Smart Courtroom Timer and Case Display System that automates spea
 9. The LCD displays "Waiting for Next Speaker."
 10. The system returns to displaying the current date and time until the next speaker arrives.
 
+![Watch Demo Video](Videos/demo_video.mp4)
 
 ## Applications
 
