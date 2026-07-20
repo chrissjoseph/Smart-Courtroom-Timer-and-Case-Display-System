@@ -35,18 +35,95 @@ An ESP32-based Smart Courtroom Timer and Case Display System that automates spea
 
 ## Working Principle
 
-1. The system initially displays the current date and time.
-2. Pressing the push button starts a new case or increments the case number.
-3. The IR sensor detects the entry of a speaker.
-4. The speaker number is automatically incremented.
-5. A two-minute countdown timer starts for the speaker.
-6. When the sound level exceeds the predefined threshold, the timer pauses.
-7. When the threshold is crossed again, the timer resumes from the previous value.
-8. Once the speaker exits the detection area, the timer stops.
-9. The LCD displays "Waiting for Next Speaker."
-10. The system returns to displaying the current date and time until the next speaker arrives.
+The **Smart Courtroom Timer and Case Display System** is designed to automate courtroom time management by monitoring speaker activity and displaying real-time case information. The system is built around the **ESP32 microcontroller**, which acts as the central processing unit and coordinates all connected peripherals.
+
+When the system is powered on, the ESP32 initializes the **DS3231 Real-Time Clock (RTC)**, **16×2 I2C LCD**, **IR sensor**, **sound sensor**, and **push button**. The RTC continuously provides the current date and time, which are displayed on the LCD until a new case is initiated.
+
+The **push button** is used to register a new case. Each press increments the case number and prepares the system for the next hearing. The updated case number is immediately displayed on the LCD.
+
+An **IR sensor** is placed near the speaker's position to detect the entry of a participant. Whenever the sensor detects a person, the ESP32 automatically increments the speaker number and starts a predefined countdown timer. This ensures that each speaker receives a fixed and measurable speaking duration.
+
+The **sound sensor** continuously monitors courtroom audio. Based on the programmed threshold, the ESP32 can pause or resume the countdown timer during interruptions such as objections or judicial instructions. This helps maintain accurate timing without manual intervention.
+
+Throughout the proceedings, the LCD continuously displays the **current case number, speaker number, remaining speaking time, and real-time clock**. The ESP32 processes sensor inputs in real time, updates the countdown timer, and refreshes the display accordingly, providing an efficient and transparent courtroom management system.
 
 ![Watch Demo Video](Videos/demovideo.mp4)
+
+## System Workflow
+
+```text
+                ┌────────────────────┐
+                │    Power ON        │
+                └─────────┬──────────┘
+                          │
+                          ▼
+        ┌─────────────────────────────────┐
+        │ Initialize ESP32 and Peripherals│
+        │ • RTC                           │
+        │ • LCD                           │
+        │ • IR Sensor                     │
+        │ • Sound Sensor                  │
+        │ • Push Button                   │
+        └───────────────┬─────────────────┘
+                        │
+                        ▼
+          ┌──────────────────────────────┐
+          │ Display Current Date & Time  │
+          └───────────────┬──────────────┘
+                          │
+                          ▼
+          ┌──────────────────────────────┐
+          │ Judge Presses Push Button    │
+          └───────────────┬──────────────┘
+                          │
+                          ▼
+          ┌──────────────────────────────┐
+          │ Increment Case Number        │
+          └───────────────┬──────────────┘
+                          │
+                          ▼
+          ┌──────────────────────────────┐
+          │ IR Sensor Detects Speaker    │
+          └───────────────┬──────────────┘
+                          │
+                          ▼
+          ┌──────────────────────────────┐
+          │ Increment Speaker Number     │
+          │ Start Countdown Timer        │
+          └───────────────┬──────────────┘
+                          │
+                          ▼
+          ┌──────────────────────────────┐
+          │ Monitor Sound Sensor         │
+          │ Pause / Resume Timer         │
+          └───────────────┬──────────────┘
+                          │
+                          ▼
+          ┌──────────────────────────────┐
+          │ Update LCD Display           │
+          │ • Case Number                │
+          │ • Speaker Number             │
+          │ • Remaining Time             │
+          │ • Date & Time                │
+          └───────────────┬──────────────┘
+                          │
+                          ▼
+          ┌──────────────────────────────┐
+          │ Wait for Next Speaker / Case │
+          └──────────────────────────────┘
+```
+
+### Key Operations
+
+- Initializes all hardware components during startup.
+- Displays real-time date and time using the DS3231 RTC.
+- Registers new cases using a push button.
+- Detects speakers automatically using an IR sensor.
+- Starts and manages an individual countdown timer for each speaker.
+- Monitors courtroom audio using a sound sensor to pause or resume the timer.
+- Continuously updates the LCD with live courtroom information.
+- Automates courtroom time management, reducing manual effort and improving fairness..
+
 
 ## Simulation
 
